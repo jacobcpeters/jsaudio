@@ -94,7 +94,7 @@ static int streamCb (
   PaStreamCallbackFlags statusFlags,
   void *userData
 ) {
-  printf("%s\n", "Called");
+  printf("%s\n", "Inside Static Callback");
   JsPaStreamCallback* callback = static_cast<JsPaStreamCallback*>(userData);
   return callback->sendCallback(input, output, frameCount, timeInfo, statusFlags);
 }
@@ -143,6 +143,13 @@ NAN_METHOD(openStream) {
   );
   if (err != paNoError) {
     printf("%s\n", "OpenStream: ");
+    printf("%s\n", Pa_GetErrorText(err));
+    // ThrowError(Pa_GetErrorText(err));
+  }
+    
+  err = Pa_StartStream(stream->streamPtr());
+  if (err != paNoError) {
+    printf("%s\n", "StartStream: ");
     printf("%s\n", Pa_GetErrorText(err));
     // ThrowError(Pa_GetErrorText(err));
   }

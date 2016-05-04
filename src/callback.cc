@@ -2,7 +2,8 @@
 
 Persistent<Function> JsPaStreamCallback::constructor;
 
-JsPaStreamCallback::JsPaStreamCallback(LocalFunction callbackHandle) : _callbackHandle(callbackHandle) {
+JsPaStreamCallback::JsPaStreamCallback(Callback* callback) : _callback(callback) {
+    
 }
 
 JsPaStreamCallback::~JsPaStreamCallback() {
@@ -13,10 +14,17 @@ int JsPaStreamCallback::sendCallback(const void* input, void* output,
                  const PaStreamCallbackTimeInfo *timeInfo,
                  PaStreamCallbackFlags statusFlags
 ) {
-     
-    MakeCallback(Nan::GetCurrentContext()->Global(), _callbackHandle, 0, 0);
+    //Isolate* isolate = Isolate::GetCurrent();
+    //HandleScope scope;
+    //v8::Local<v8::Value> argv[1] = { Nan::New("hello world").ToLocalChecked() };
+    
+    printf("%s\n", "Inside Callback Object");
+    LocalFunction cb = Nan::New<Function>(_callbackHandle);
+    printf("%s\n", "Inside Callback Object");
+    MakeCallback(Nan::GetCurrentContext()->Global(), cb, 0, 0);
     return 0;
 }
+
 
 NAN_MODULE_INIT(JsPaStreamCallback::Init) {
   // Prepare constructor template
@@ -32,7 +40,7 @@ NAN_METHOD(JsPaStreamCallback::New) {
   if (info.IsConstructCall()) {
     // Invoked as constructor: `new JsPaStreamCallback(Function)`
     LocalFunction  callback = info[0]->IsUndefined() ? Nan::Undefined().As<Function>() : info[0].As<Function>();
-    JsPaStreamCallback* obj = new JsPaStreamCallback(callback);
+    JsPaStreamCallback* obj = new JsPaStreamCallback(info.GetIsolate(), callback);
     obj->Wrap(info.This());
     info.GetReturnValue().Set(info.This());
   } else {

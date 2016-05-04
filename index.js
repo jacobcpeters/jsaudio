@@ -3,6 +3,7 @@
 // Setup
 const JsAudio = require('./lib/jsaudio');
 const JsPaStream = JsAudio.JsPaStream;
+const JsPaStreamCallback = JsAudio.JsPaStreamCallback;
 const formats = {
   paFloat32: 1,
   paInt32: 2,
@@ -31,8 +32,10 @@ var streamOpts = {
   streamFlags: 0
 };
 
-var stream = new JsPaStream();
+var stream = new JsPaStream(),
+    callback = new JsPaStreamCallback(() => { console.log('Successful Callback!') });
 streamOpts.stream = stream;
+streamOpts.callback = callback;
 // Exports
 module.exports = JsAudio;
 
@@ -41,15 +44,15 @@ let jsAudio = JsAudio.new();
 jsAudio
   .on('error', (e) => { console.log(e.stack) })
   .on('initialize-done', () => { console.log('initialized successfully!') })
-  .on('get-version-done', (version) => { console.log(version) })
-  .on('test-params-done', console.log)
-  .on('get-host-api-count-done', console.log)
-  .on('get-default-host-api-done', console.log)
-  .on('get-host-api-info-done', console.log)
-  .on('get-device-count-done', console.log)
-  .on('get-default-input-device-done', console.log)
-  .on('get-default-output-device-done', console.log)
-  .on('get-device-info-done', console.log)
+  //.on('get-version-done', (version) => { console.log(version) })
+  //.on('test-params-done', console.log)
+  //.on('get-host-api-count-done', console.log)
+  //.on('get-default-host-api-done', console.log)
+  //.on('get-host-api-info-done', console.log)
+  //.on('get-device-count-done', console.log)
+  //.on('get-default-input-device-done', console.log)
+  //.on('get-default-output-device-done', console.log)
+  //.on('get-device-info-done', console.log)
   .on('open-stream-done', console.log);
 
 jsAudio.initialize();
@@ -62,4 +65,10 @@ jsAudio.getDefaultInputDevice();
 jsAudio.getDefaultOutputDevice();
 jsAudio.getDeviceInfo(1);
 jsAudio.getDeviceInfo(10);
+setTimeout(() => console.log('hep2'), 5000);
 jsAudio.openStream(streamOpts);
+var longTest
+for(var i=0; i < 10000000; i++) {
+    longTest = i * Math.random();
+}
+setTimeout(() => console.log('hep2'), 10000);

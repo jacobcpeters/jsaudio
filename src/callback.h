@@ -12,13 +12,14 @@ public:
                      unsigned long frameCount,
                      const PaStreamCallbackTimeInfo *timeInfo,
                      PaStreamCallbackFlags statusFlags);
+    int sendCallback();
 private:
-    explicit JsPaStreamCallback(LocalFunction callbackHandle);
+    explicit JsPaStreamCallback(Isolate* isolate, LocalFunction callbackHandle);
     ~JsPaStreamCallback();
 
     static NAN_METHOD(New);
     static Persistent<Function> constructor;
-    LocalFunction _callbackHandle;
+    Persistent<Function> _callbackHandle;
 };
 
 #endif

@@ -29,6 +29,13 @@
                     '<(module_root_dir)/vendor/portaudio_x86.dll',
                     '<(module_root_dir)/vendor/portaudio_x86.lib',
                   ]
+                },
+                {
+                  'destination': '<(module_root_dir)/build/Debug/',
+                  'files': [
+                    '<(module_root_dir)/vendor/portaudio_x86.dll',
+                    '<(module_root_dir)/vendor/portaudio_x86.lib',
+                  ]
                 }]
               }
             ],
@@ -40,6 +47,13 @@
                 'copies': [
                 {
                   'destination': '<(module_root_dir)/build/Release/',
+                  'files': [
+                    '<(module_root_dir)/vendor/portaudio_x64.dll',
+                    '<(module_root_dir)/vendor/portaudio_x64.lib',
+                  ]
+                },
+                {
+                  'destination': '<(module_root_dir)/build/Debug/',
                   'files': [
                     '<(module_root_dir)/vendor/portaudio_x64.dll',
                     '<(module_root_dir)/vendor/portaudio_x64.lib',
