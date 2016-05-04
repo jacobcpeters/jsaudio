@@ -1,5 +1,6 @@
 #include "jsaudio.h"
 #include "stream.h"
+#include "callback.h"
 
 /* BEGIN Init & Exports */
 NAN_MODULE_INIT(InitAll) {
@@ -17,6 +18,7 @@ NAN_MODULE_INIT(InitAll) {
     // NAN_EXPORT(target, openDefaultStream);
     
     JsPaStream::Init(target);
+    JsPaStreamCallback::Init(target);
 }
 
 NODE_MODULE(jsaudio, InitAll)
