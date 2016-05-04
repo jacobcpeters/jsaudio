@@ -7,6 +7,7 @@
 #include "jsaudio.h"
 #include "helpers.h"
 #include "stream.h"
+#include "callback.h"
 
 /* Initialize stream and jsStreamCb as global */
 LocalFunction jsStreamCb;
@@ -94,39 +95,40 @@ static int streamCb (
   void *userData
 ) {
   printf("%s\n", "Called");
-  const unsigned argc = 6;
-  LocalValue argv[argc] = {
-    ToLocString(""),
-    ToLocString(""),
-    ToLocString(""),
-    ToLocString(""),
-    ToLocString(""),
-    ToLocString("")
-  };
-  jsStreamCb->Call(GetCurrentContext()->Global(), argc, argv);
-  return 0;
+  JsPaStreamCallback* callback = static_cast<JsPaStreamCallback*>(userData);
+  return callback->sendCallback(input, output, frameCount, timeInfo, statusFlags);
 }
 
 // http://portaudio.com/docs/v19-doxydocs/portaudio_8h.html#a443ad16338191af364e3be988014cbbe
 NAN_METHOD(openStream) {
   HandleScope scope;
   PaError err;
+    
   // Get params objects
   LocalObject obj = info[0]->ToObject();
   JsPaStream* stream = ObjectWrap::Unwrap<JsPaStream>(ToLocObject(Get(obj, ToLocString("stream"))));
+  
   LocalObject objInput = ToLocObject(Get(obj, ToLocString("input")));
   LocalObject objOutput = ToLocObject(Get(obj, ToLocString("output")));
+    
   PaStreamParameters paramsIn = LocObjToPaStreamParameters(objInput);
   PaStreamParameters paramsOut = LocObjToPaStreamParameters(objOutput);
+    
   // Get stream options
   double sampleRate = LocalizeDouble(Get(obj, ToLocString("sampleRate")));
 	unsigned long framesPerBuffer = LocalizeULong(
     Get(obj, ToLocString("framesPerBuffer")));
   PaStreamFlags streamFlags = static_cast<PaStreamFlags>(
     Get(obj, ToLocString("streamFlags")).ToLocalChecked()->IntegerValue());
+    
   // Callback
   // http://portaudio.com/docs/v19-doxydocs/portaudio_8h.html#a8a60fb2a5ec9cbade3f54a9c978e2710
-  jsStreamCb = info[1].As<Function>();
+  // A pointer to the JsPaStreamCallback is sent through the userData argument of the Stream.
+  // This allows for easy handling of separate callbacks for multiple streams.
+  // However, it does inhibit the use of userData for other purposes.
+  // There should be JS based workarounds, but it does stray from the PA API.
+  JsPaStreamCallback* jsCallback = ObjectWrap::Unwrap<JsPaStreamCallback>(ToLocObject(Get(obj, ToLocString("callback"))));
+    
   // Start stream
   // ToDo: Do this in AsyncQueueWorker
   err = Pa_OpenStream(
@@ -137,7 +139,7 @@ NAN_METHOD(openStream) {
     framesPerBuffer,
     streamFlags,
     streamCb,
-    NULL
+    static_cast<void*>(jsCallback)
   );
   if (err != paNoError) {
     printf("%s\n", "OpenStream: ");

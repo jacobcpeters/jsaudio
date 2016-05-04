@@ -11,10 +11,11 @@ JsPaStreamCallback::~JsPaStreamCallback() {
 int JsPaStreamCallback::sendCallback(const void* input, void* output,
                  unsigned long frameCount,
                  const PaStreamCallbackTimeInfo *timeInfo,
-                 PaStreamCallbackFlags statusFlags) {
-    
-    
+                 PaStreamCallbackFlags statusFlags
+) {
+     
     MakeCallback(Nan::GetCurrentContext()->Global(), _callbackHandle, 0, 0);
+    return 0;
 }
 
 NAN_MODULE_INIT(JsPaStreamCallback::Init) {
