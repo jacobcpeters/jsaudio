@@ -1,7 +1,8 @@
 'use strict'
 
 // Setup
-const JsAudio = require('./lib/jsaudio')
+const JsAudio = require('./lib/jsaudio');
+const JsPaStream = require('bindings')('jsaudio').JsPaStream;
 const formats = {
   paFloat32: 1,
   paInt32: 2,
@@ -11,7 +12,7 @@ const formats = {
   paUInt8: 32,
   paCustomFormat: 65536,
   paNonInterleaved: 2147483648
-}
+};
 const streamOpts = {
   input: {
     device: 1,
@@ -28,13 +29,14 @@ const streamOpts = {
   sampleRate: 44100,
   framesPerBuffer: 64,
   streamFlags: 0
-}
+};
 
 // Exports
 module.exports = JsAudio
 
 // Test stuff, for now, needs to go into actual test assertions later
-let jsAudio = JsAudio.new()
+var stream = new JsPaStream();
+let jsAudio = JsAudio.new();
 jsAudio
   .on('error', (e) => { console.log(e.stack) })
   .on('initialize-done', () => { console.log('initialized successfully!') })
@@ -47,18 +49,17 @@ jsAudio
   .on('get-default-input-device-done', console.log)
   .on('get-default-output-device-done', console.log)
   .on('get-device-info-done', console.log)
-  .on('open-stream-done', console.log)
+  .on('open-stream-done', console.log);
 
-jsAudio.initialize()
-jsAudio.getVersion()
-jsAudio.getHostApiCount()
-jsAudio.getDefaultHostApi()
-jsAudio.getHostApiInfo()
-jsAudio.getDeviceCount()
-jsAudio.getDefaultInputDevice()
-jsAudio.getDefaultOutputDevice()
-jsAudio.getDeviceInfo(0)
-jsAudio.getDeviceInfo(3)
-setTimeout(() => console.log('hep2'), 5000)
-jsAudio.openStream(streamOpts)
-setTimeout(() => console.log('hep2'), 10000)
+jsAudio.initialize();
+jsAudio.getVersion();
+jsAudio.getHostApiCount();
+jsAudio.getDefaultHostApi();
+jsAudio.getHostApiInfo();
+jsAudio.getDeviceCount();
+jsAudio.getDefaultInputDevice();
+jsAudio.getDefaultOutputDevice();
+jsAudio.getDeviceInfo(0);
+jsAudio.getDeviceInfo(3);
+jsAudio.openStream(streamOpts);
+console.log(new JsPaStream());

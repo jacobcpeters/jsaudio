@@ -12,6 +12,8 @@ private:
     explicit JsPaStream();
     ~JsPaStream();
 
+    static NAN_METHOD(test);
+    
     static NAN_METHOD(New);
     static Persistent<Function> constructor;
     PaStream* _stream;
